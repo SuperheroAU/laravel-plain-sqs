@@ -29,7 +29,7 @@ class Queue extends SqsQueue
 
         $handlerJob = $this->getClass($queue) . '@handle';
 
-        return $job->isPlain() ? json_encode($job->getPayload()) : json_encode(['job' => $handlerJob, 'data' => $job->getPayload()]);
+        return $job->isPlain() ? $this->encodeJson($job->getPayload()) : $this->encodeJson(['job' => $handlerJob, 'data' => $job->getPayload()]);
     }
 
     /**
@@ -97,7 +97,7 @@ class Queue extends SqsQueue
             'uuid' => $payload['MessageId']
         ];
 
-        $payload['Body'] = json_encode($body);
+        $payload['Body'] = $this->encodeJson($body);
 
         return $payload;
     }
@@ -116,6 +116,11 @@ class Queue extends SqsQueue
             $payload = $payload['data'];
         }
 
-        return parent::pushRaw(json_encode($payload), $queue, $options);
+        return parent::pushRaw($this->encodeJson($payload), $queue, $options);
+    }
+
+    private function encodeJson($data)
+    {
+        return json_encode($data, JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }
