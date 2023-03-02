@@ -102,23 +102,6 @@ class Queue extends SqsQueue
         return $payload;
     }
 
-    /**
-     * @param string $payload
-     * @param null $queue
-     * @param array $options
-     * @return mixed|null
-     */
-    public function pushRaw($payload, $queue = null, array $options = [])
-    {
-        $payload = json_decode($payload, true);
-
-        if (isset($payload['data']) && isset($payload['job'])) {
-            $payload = $payload['data'];
-        }
-
-        return parent::pushRaw($this->encodeJson($payload), $queue, $options);
-    }
-
     private function encodeJson($data)
     {
         return json_encode($data, JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
