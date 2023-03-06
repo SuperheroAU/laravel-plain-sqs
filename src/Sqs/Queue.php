@@ -60,6 +60,7 @@ class Queue extends SqsQueue
         $response = $this->sqs->receiveMessage([
             'QueueUrl' => $queue,
             'AttributeNames' => ['All'],
+            'MessageAttributeNames' => ['All'],
         ]);
 
         if (isset($response['Messages']) && count($response['Messages']) > 0) {
@@ -94,6 +95,7 @@ class Queue extends SqsQueue
         $body = [
             'job' => $class . '@handle',
             'data' => isset($body['data']) ? $body['data'] : $body,
+            'attributes' => array_merge($payload['Attributes'], $payload['MessageAttributes']),
             'raw' => $payload['Body'],
             'uuid' => $payload['MessageId']
         ];
